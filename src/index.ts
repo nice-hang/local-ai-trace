@@ -17,9 +17,64 @@ program
     await startServer({ port: parseInt(options.port, 10) });
   });
 
-const config = program.command('config').description('Manage configuration');
+// model
+const model = program.command('model').description('Manage local models');
 
-config
+model
+  .command('list')
+  .description('List installed and available models')
+  .action(async () => {
+    const { listModels } = await import('./cli/model.js');
+    await listModels();
+  });
+
+model
+  .command('add')
+  .description('Download and install a model')
+  .argument('<id>', 'Model ID (e.g. qwen2.5-1.5b)')
+  .option('--url <url>', 'Custom download URL (for models not in builtin list)')
+  .action(async (id, options) => {
+    try {
+      const { addModel } = await import('./cli/model.js');
+      await addModel(id, options);
+    } catch (err: any) {
+      console.error(err.message);
+      process.exit(1);
+    }
+  });
+
+model
+  .command('remove')
+  .description('Remove a model from config')
+  .argument('<id>', 'Model ID')
+  .action(async (id) => {
+    try {
+      const { removeModel } = await import('./cli/model.js');
+      await removeModel(id);
+    } catch (err: any) {
+      console.error(err.message);
+      process.exit(1);
+    }
+  });
+
+model
+  .command('default')
+  .description('Set the default model')
+  .argument('<id>', 'Model ID')
+  .action(async (id) => {
+    try {
+      const { setDefaultModel } = await import('./cli/model.js');
+      await setDefaultModel(id);
+    } catch (err: any) {
+      console.error(err.message);
+      process.exit(1);
+    }
+  });
+
+// config
+const configCmd = program.command('config').description('Manage configuration');
+
+configCmd
   .command('list')
   .description('Show current configuration')
   .action(async () => {

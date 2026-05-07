@@ -25,6 +25,9 @@ describe('config', () => {
   it('should save and load config correctly', () => {
     const config: AppConfig = {
       port: 4321,
+      mode: 'hybrid',
+      maxRuns: 1000,
+      models: [],
       providers: [{ name: 'openai', apiKey: 'sk-test', baseUrl: 'https://api.openai.com/v1', models: ['gpt-4o'] }],
     };
     saveConfig(config, TEST_CONFIG_DIR);
@@ -37,6 +40,9 @@ describe('config', () => {
   it('should find provider by model name', () => {
     const config: AppConfig = {
       port: 4321,
+      mode: 'hybrid',
+      maxRuns: 1000,
+      models: [],
       providers: [{ name: 'openai', apiKey: 'sk-test', baseUrl: 'https://api.openai.com/v1', models: ['gpt-4o', 'gpt-4o-mini'] }],
     };
     const provider = getProvider(config, 'gpt-4o');
@@ -45,7 +51,18 @@ describe('config', () => {
   });
 
   it('should return undefined for unknown model', () => {
-    const config: AppConfig = { port: 4321, providers: [] };
+    const config: AppConfig = { port: 4321, mode: 'hybrid', maxRuns: 1000, models: [], providers: [] };
     expect(getProvider(config, 'unknown-model')).toBeUndefined();
+  });
+
+  it('should fill missing fields for old config format', () => {
+    // 模拟旧格式配置（没有 models/mode/maxRuns）
+    const oldConfig = { port: 4321, providers: [] };
+    saveConfig(oldConfig as any, TEST_CONFIG_DIR);
+    // 兼容加载
+    const config = loadConfig(TEST_CONFIG_DIR);
+    expect(config.mode).toBe('hybrid');
+    expect(config.maxRuns).toBe(1000);
+    expect(config.models).toEqual([]);
   });
 });
