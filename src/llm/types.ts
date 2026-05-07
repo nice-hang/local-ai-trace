@@ -9,6 +9,7 @@ export interface BuiltinModel {
   quantization: string;
   description: string;
   minRam: string;
+  contextLength?: number;
 }
 
 export interface DownloadProgress {

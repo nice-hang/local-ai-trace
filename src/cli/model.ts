@@ -3,20 +3,28 @@ import { BUILTIN_MODELS, getBuiltinModel, getModelsDir } from '../llm/registry.j
 import { downloadModel } from '../llm/downloader.js';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import {
+  bold, cyan, green, red, yellow, gray, dim, success, error, highlight,
+} from './color.js';
 
 export async function listModels(): Promise<void> {
   const config = loadConfig();
   const installed = config.models;
 
-  console.log('\n已安装的模型:');
+  console.log(`\n${bold('已安装的模型')}`);
   if (installed.length === 0) {
-    console.log('  (无)');
+    console.log(`  ${gray('(无)')}`);
   } else {
     for (const m of installed) {
       const isDefault = m.name === config.defaultModel;
-      console.log(`  ${m.name}${isDefault ? ' (default)' : ''}`);
-      console.log(`    路径: ${m.path}`);
-      if (m.size) console.log(`    大小: ${m.size}`);
+      const badge = isDefault ? green(' ● default') : '';
+      console.log(`  ${cyan(m.name)}${badge}`);
+      console.log(`    ${dim('路径:')} ${m.path}`);
+      if (m.size) console.log(`    ${dim('大小:')} ${m.size}`);
+      const builtin = getBuiltinModel(m.name);
+      if (builtin?.contextLength) {
+        console.log(`    ${dim('上下文:')} ${(builtin.contextLength / 1024).toFixed(0)}K tokens`);
+      }
     }
   }
 
@@ -24,9 +32,10 @@ export async function listModels(): Promise<void> {
   const available = BUILTIN_MODELS.filter((m) => !installedNames.has(m.id));
 
   if (available.length > 0) {
-    console.log('\n可用但未安装:');
+    console.log(`\n${bold('可用但未安装')}`);
     for (const m of available) {
-      console.log(`  ${m.id.padEnd(20)} ${m.size.padEnd(10)} ${m.description}`);
+      const ctx = m.contextLength ? `${(m.contextLength / 1024).toFixed(0)}K ctx` : '';
+      console.log(`  ${highlight(m.id.padEnd(25))} ${yellow(m.size.padEnd(10))} ${gray(ctx.padEnd(12))} ${dim(m.description)}`);
     }
   }
   console.log();
@@ -39,7 +48,7 @@ export async function addModel(
   const config = loadConfig();
 
   if (config.models.some((m) => m.name === id)) {
-    throw new Error(`Model "${id}" is already installed.`);
+    throw new Error(error(`Model "${id}" is already installed.`));
   }
 
   const builtin = getBuiltinModel(id);
@@ -48,30 +57,31 @@ export async function addModel(
 
   if (!url) {
     throw new Error(
-      `Unknown model "${id}". Available: ${BUILTIN_MODELS.map((m) => m.id).join(', ')}. ` +
-      `Or provide --url to add a custom model.`
+      error(
+        `Unknown model "${id}". Available: ${BUILTIN_MODELS.map((m) => highlight(m.id)).join(', ')}. ` +
+        `Or provide --url to add a custom model.`
+      )
     );
   }
 
   const modelsDir = getModelsDir();
   const destPath = join(modelsDir, filename);
   if (existsSync(destPath)) {
-    console.log(`Model file already exists at ${destPath}, adding to config...`);
+    console.log(success(`Model file already exists at ${destPath}, adding to config...`));
   } else {
-    console.log(`Downloading ${builtin?.name || id} ...`);
+    console.log(`\n${bold('⬇  Downloading')} ${highlight(builtin?.name || id)} ...\n`);
     await downloadModel({
       url,
       filename,
       onProgress: (p) => {
+        const bar = green('█'.repeat(Math.floor(p.percent / 5))) + gray('░'.repeat(20 - Math.floor(p.percent / 5)));
+        process.stdout.write(`  ${bar} ${bold(String(p.percent))}% ${gray(p.speed || '')}\r`);
         if (p.percent === 100) {
-          console.log(`  ${'█'.repeat(20)} 100%`);
-        } else {
-          const bar = '█'.repeat(Math.floor(p.percent / 5)) + '░'.repeat(20 - Math.floor(p.percent / 5));
-          process.stdout.write(`  ${bar} ${p.percent}% ${p.speed}\r`);
+          process.stdout.write('\n');
         }
       },
     });
-    console.log('  下载完成！');
+    console.log(`  ${success('下载完成！')}`);
   }
 
   const modelConfig: LocalModelConfig = {
@@ -83,7 +93,7 @@ export async function addModel(
 
   config.models.push(modelConfig);
   saveConfig(config);
-  console.log(`Model "${id}" added to config.`);
+  console.log(`  ${success(`Model "${id}" added to config.`)}`);
 }
 
 export async function removeModel(id: string): Promise<void> {
@@ -91,7 +101,7 @@ export async function removeModel(id: string): Promise<void> {
   const idx = config.models.findIndex((m) => m.name === id);
 
   if (idx === -1) {
-    throw new Error(`Model "${id}" not found.`);
+    throw new Error(error(`Model "${id}" not found.`));
   }
 
   config.models.splice(idx, 1);
@@ -101,8 +111,8 @@ export async function removeModel(id: string): Promise<void> {
   }
 
   saveConfig(config);
-  console.log(`Model "${id}" removed from config.`);
-  console.log('(模型文件保留在磁盘上，如需删除请手动操作)');
+  console.log(`  ${success(`Model "${id}" removed from config.`)}`);
+  console.log(`  ${dim('(模型文件保留在磁盘上，如需删除请手动操作)')}`);
 }
 
 export async function setDefaultModel(id: string): Promise<void> {
@@ -110,10 +120,10 @@ export async function setDefaultModel(id: string): Promise<void> {
   const found = config.models.find((m) => m.name === id);
 
   if (!found) {
-    throw new Error(`Model "${id}" not found. Install it first with: lat model add ${id}`);
+    throw new Error(error(`Model "${id}" not found. Install it first with: lat model add ${id}`));
   }
 
   config.defaultModel = id;
   saveConfig(config);
-  console.log(`Default model set to "${id}".`);
+  console.log(`  ${success(`Default model set to "${id}".`)}`);
 }

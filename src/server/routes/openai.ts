@@ -44,7 +44,12 @@ export async function registerOpenAIRoutes(server: FastifyInstance, deps: Server
     }
 
     const model = resolveModel(deps, rawModel);
-    const localModel = deps.config.models.find((m) => m.name === model)!;
+    const localModel = deps.config.models.find((m) => m.name === model);
+    if (!localModel) {
+      return reply.status(400).send({
+        error: { message: `Model "${model}" not found in installed models. Run: lat add ${model}` },
+      });
+    }
 
     const runId = nanoid();
     const startedAt = Date.now();

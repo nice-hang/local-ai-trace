@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import { red } from './cli/color.js';
 
 const program = new Command();
 
@@ -37,7 +38,7 @@ model
       const { addModel } = await import('./cli/model.js');
       await addModel(id, options);
     } catch (err: any) {
-      console.error(err.message);
+      console.error(red(err.message));
       process.exit(1);
     }
   });
@@ -51,7 +52,7 @@ model
       const { removeModel } = await import('./cli/model.js');
       await removeModel(id);
     } catch (err: any) {
-      console.error(err.message);
+      console.error(red(err.message));
       process.exit(1);
     }
   });
@@ -65,7 +66,7 @@ model
       const { setDefaultModel } = await import('./cli/model.js');
       await setDefaultModel(id);
     } catch (err: any) {
-      console.error(err.message);
+      console.error(red(err.message));
       process.exit(1);
     }
   });
