@@ -35,7 +35,6 @@ export interface Run {
   error?: string;
   durationMs: number;
   model?: string;
-  provider?: string;
   promptTokens: number;
   completionTokens: number;
   totalTokens: number;

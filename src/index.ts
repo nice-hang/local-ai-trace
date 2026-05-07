@@ -10,14 +10,13 @@ program
 
 program
   .command('start')
-  .description('Start the local-ai-trace server')
+  .description('Start the server')
   .option('-p, --port <number>', 'Server port', '4321')
   .action(async (options) => {
     const { startServer } = await import('./cli/start.js');
     await startServer({ port: parseInt(options.port, 10) });
   });
 
-// model
 const model = program.command('model').description('Manage local models');
 
 model
@@ -32,7 +31,7 @@ model
   .command('add')
   .description('Download and install a model')
   .argument('<id>', 'Model ID (e.g. qwen2.5-1.5b)')
-  .option('--url <url>', 'Custom download URL (for models not in builtin list)')
+  .option('--url <url>', 'Custom download URL')
   .action(async (id, options) => {
     try {
       const { addModel } = await import('./cli/model.js');
@@ -69,48 +68,6 @@ model
       console.error(err.message);
       process.exit(1);
     }
-  });
-
-// config
-const configCmd = program.command('config').description('Manage configuration');
-
-configCmd
-  .command('list')
-  .description('Show current configuration')
-  .action(async () => {
-    const { showConfig } = await import('./cli/config.js');
-    showConfig();
-  });
-
-const provider = program.command('provider').description('Manage API providers');
-
-provider
-  .command('add')
-  .description('Add a provider')
-  .argument('<name>', 'Provider name (e.g. openai)')
-  .option('--api-key <key>', 'API key')
-  .option('--base-url <url>', 'Base URL')
-  .option('--models <models>', 'Comma-separated model list')
-  .action(async (name, options) => {
-    const { addProvider } = await import('./cli/config.js');
-    await addProvider(name, options);
-  });
-
-provider
-  .command('list')
-  .description('List configured providers')
-  .action(async () => {
-    const { listProviders } = await import('./cli/config.js');
-    await listProviders();
-  });
-
-provider
-  .command('remove')
-  .description('Remove a provider')
-  .argument('<name>', 'Provider name')
-  .action(async (name) => {
-    const { removeProvider } = await import('./cli/config.js');
-    await removeProvider(name);
   });
 
 program.parse(process.argv);

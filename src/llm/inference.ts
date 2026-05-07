@@ -128,6 +128,45 @@ export class ModelManager {
       totalTokens: promptTokens + completionTokens,
     };
   }
+
+  async inferStream(
+    modelPath: string,
+    inputs: RunInputs,
+    onChunk: (text: string) => void,
+    gpuLayers = 0,
+    contextSize = 4096,
+  ): Promise<InferenceResult> {
+    const model = await this.loadModel(modelPath, gpuLayers, contextSize);
+    const context = await model.createContext({ contextSize });
+    const session = new LlamaChatSession({
+      contextSequence: context.getSequence(),
+    });
+
+    const prompt = messagesToText(inputs.messages);
+    let fullResponse = '';
+
+    await session.prompt(prompt, {
+      temperature: (inputs.temperature as number) ?? 0.7,
+      maxTokens: (inputs.max_tokens as number) ?? 2048,
+      onTextChunk: (text: string) => {
+        fullResponse += text;
+        onChunk(text);
+      },
+    });
+
+    const promptTokens = estimateTokens(prompt);
+    const completionTokens = estimateTokens(fullResponse);
+
+    return {
+      outputs: {
+        content: fullResponse,
+        finish_reason: 'stop',
+      },
+      promptTokens,
+      completionTokens,
+      totalTokens: promptTokens + completionTokens,
+    };
+  }
 }
 
 /** 全局单例 */

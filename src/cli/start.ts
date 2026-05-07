@@ -11,7 +11,6 @@ export interface StartOptions {
 }
 
 export async function startServer(options: StartOptions): Promise<void> {
-  // 首次运行检测
   if (isFirstRun()) {
     await runFirstRunSetup();
   }
@@ -19,7 +18,6 @@ export async function startServer(options: StartOptions): Promise<void> {
   const config = loadConfig();
   config.port = options.port || config.port;
 
-  // 打印默认模型信息
   if (config.defaultModel) {
     console.log(`  📦  默认模型: ${config.defaultModel}`);
   }
@@ -33,7 +31,6 @@ export async function startServer(options: StartOptions): Promise<void> {
     }
   });
 
-  // 如果有本地模型，预初始化推理引擎
   if (config.models.length > 0 && !modelManager.isInitialized()) {
     await modelManager.warmup();
   }

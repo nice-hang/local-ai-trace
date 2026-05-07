@@ -20,7 +20,7 @@ function askQuestion(query: string): Promise<string> {
 
 export function isFirstRun(): boolean {
   const config = loadConfig();
-  return config.models.length === 0 && config.providers.length === 0;
+  return config.models.length === 0;
 }
 
 export async function runFirstRunSetup(): Promise<void> {
@@ -32,7 +32,7 @@ export async function runFirstRunSetup(): Promise<void> {
     console.log(`  ${i + 1}) ${m.name.padEnd(25)} ${m.size.padEnd(10)} ${m.description}`);
     return m;
   });
-  console.log(`  ${choices.length + 1}) 跳过（纯 proxy 模式）`);
+  console.log(`  ${choices.length + 1}) 稍后再说`);
   console.log();
 
   let selection = '';
@@ -48,7 +48,7 @@ export async function runFirstRunSetup(): Promise<void> {
 
   const selectedIndex = parseInt(selection, 10);
   if (selectedIndex > choices.length) {
-    console.log('\n  已跳过模型下载，可稍后通过 `lat model add <id>` 安装模型。\n');
+    console.log('\n  已跳过，可稍后通过 `lat add <id>` 安装模型。\n');
     return;
   }
 
