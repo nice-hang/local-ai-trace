@@ -1,0 +1,17 @@
+{
+  "name": "pi-agent-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx cli.ts"
+  },
+  "dependencies": {
+    "@mariozechner/pi-agent-core": "^0.70.0",
+    "@mariozechner/pi-ai": "^0.70.0",
+    "@sinclair/typebox": "^0.34.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0",
+    "typescript": "^5.5.0"
+  }
+}

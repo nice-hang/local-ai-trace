@@ -3,8 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "tsx cli.ts",
-    "once": "tsx once.ts"
+    "start": "tsx cli.ts"
   },
   "dependencies": {
     "@langchain/core": "^1.1.45",

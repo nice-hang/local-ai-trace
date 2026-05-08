@@ -7,5 +7,5 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["agent.ts", "tools.ts", "cli.ts", "once.ts"]
+  "include": ["agent.ts", "tools.ts", "cli.ts"]
 }

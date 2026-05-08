@@ -9,7 +9,7 @@
   "scripts": {
     "build": "npm run build:ui && tsc",
     "build:ui": "cd client && npm run build",
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch src/index.ts start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"

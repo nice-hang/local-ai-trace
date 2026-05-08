@@ -10,7 +10,8 @@ import { type BuiltinModel } from './types.js';
  * 每个模型均适合 Agent 开发，支持 tool call / function calling。
  *
  * 注：Qwen3 系列暂无 GGUF 格式，暂以 Qwen2.5 替代。
- * 所有 URL 已通过 HuggingFace 页面验证，确保可访问。
+ * >=7B 的模型使用 bartowski 单文件版（官方 Qwen 仓库在 >=7B 时拆分多文件）。
+ * 下载器仅支持单文件 GGUF，暂不支持多文件合并。
  */
 export const BUILTIN_MODELS: BuiltinModel[] = [
   // ────────── < 1B（3个）──────────
@@ -92,8 +93,8 @@ export const BUILTIN_MODELS: BuiltinModel[] = [
   {
     id: 'qwen2.5-7b',
     name: 'Qwen2.5-7B-Instruct',
-    url: 'https://huggingface.co/Qwen/Qwen2.5-7B-Instruct-GGUF/resolve/main/qwen2.5-7b-instruct-q4_k_m.gguf',
-    filename: 'qwen2.5-7b-instruct-q4_k_m.gguf',
+    url: 'https://huggingface.co/bartowski/Qwen2.5-7B-Instruct-GGUF/resolve/main/Qwen2.5-7B-Instruct-Q4_K_M.gguf',
+    filename: 'Qwen2.5-7B-Instruct-Q4_K_M.gguf',
     size: '4.68 GB',
     bytes: 5024885350,
     quantization: 'Q4_K_M',
@@ -142,11 +143,11 @@ export const BUILTIN_MODELS: BuiltinModel[] = [
   {
     id: 'qwen2.5-14b',
     name: 'Qwen2.5-14B-Instruct',
-    url: 'https://huggingface.co/Qwen/Qwen2.5-14B-Instruct-GGUF/resolve/main/qwen2.5-14b-instruct-q4_0.gguf',
-    filename: 'qwen2.5-14b-instruct-q4_0.gguf',
-    size: '8.52 GB',
-    bytes: 9148961587,
-    quantization: 'Q4_0',
+    url: 'https://huggingface.co/bartowski/Qwen2.5-14B-Instruct-GGUF/resolve/main/Qwen2.5-14B-Instruct-Q4_K_M.gguf',
+    filename: 'Qwen2.5-14B-Instruct-Q4_K_M.gguf',
+    size: '8.99 GB',
+    bytes: 9652969472,
+    quantization: 'Q4_K_M',
     description: '高性价比，32K 上下文',
     minRam: '~16 GB',
     contextLength: 32768,
@@ -166,10 +167,10 @@ export const BUILTIN_MODELS: BuiltinModel[] = [
   {
     id: 'qwen2.5-32b',
     name: 'Qwen2.5-32B-Instruct',
-    url: 'https://huggingface.co/Qwen/Qwen2.5-32B-Instruct-GGUF/resolve/main/qwen2.5-32b-instruct-q3_k_m.gguf',
-    filename: 'qwen2.5-32b-instruct-q3_k_m.gguf',
-    size: '15.9 GB',
-    bytes: 17072481894,
+    url: 'https://huggingface.co/bartowski/Qwen2.5-32B-Instruct-GGUF/resolve/main/Qwen2.5-32B-Instruct-Q3_K_M.gguf',
+    filename: 'Qwen2.5-32B-Instruct-Q3_K_M.gguf',
+    size: '15.94 GB',
+    bytes: 17120000000,
     quantization: 'Q3_K_M',
     description: '32K 上下文，更省显存',
     minRam: '~24 GB',

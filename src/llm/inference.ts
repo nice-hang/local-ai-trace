@@ -12,17 +12,29 @@ export interface InferenceResult {
  * 将 OpenAI 格式的 messages 转为简易 prompt 文本
  * TODO: 后续改用模型的 chat template 做更准确的格式化
  */
+function extractContent(content: unknown): string {
+  if (typeof content === 'string') return content;
+  if (Array.isArray(content)) {
+    return content
+      .filter((part: any) => part?.type === 'text' && typeof part.text === 'string')
+      .map((part: any) => part.text)
+      .join('\n');
+  }
+  return '';
+}
+
 function messagesToText(messages: unknown[]): string {
   const parts: string[] = [];
-  for (const msg of messages as Array<{ role: string; content?: string }>) {
+  for (const msg of messages as Array<{ role: string; content?: unknown }>) {
+    const text = extractContent(msg.content);
     if (msg.role === 'system') {
-      parts.push(`System: ${msg.content || ''}`);
+      parts.push(`System: ${text}`);
     } else if (msg.role === 'user') {
-      parts.push(`Human: ${msg.content || ''}`);
+      parts.push(`Human: ${text}`);
     } else if (msg.role === 'assistant') {
-      parts.push(`Assistant: ${msg.content || ''}`);
+      parts.push(`Assistant: ${text}`);
     } else if (msg.role === 'tool') {
-      parts.push(`Tool (${msg.content || ''})`);
+      parts.push(`Tool (${text})`);
     }
   }
   parts.push('Assistant:');
