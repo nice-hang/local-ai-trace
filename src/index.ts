@@ -1,13 +1,21 @@
 #!/usr/bin/env node
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Command } from 'commander';
 import { red } from './cli/color.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf8')) as {
+  version: string;
+};
 
 const program = new Command();
 
 program
   .name('lat')
   .description('local-ai-trace - Local LLM tracing server')
-  .version('0.1.0');
+  .version(pkg.version);
 
 program
   .command('start')

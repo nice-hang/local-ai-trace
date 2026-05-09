@@ -2,11 +2,41 @@
   "name": "local-ai-trace",
   "version": "0.1.0",
   "description": "Local LLM tracing server with OpenAI-compatible API",
+  "license": "MIT",
   "type": "module",
+  "keywords": [
+    "llm",
+    "local",
+    "openai",
+    "tracing",
+    "fastify",
+    "cli"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nice-hang/local-ai-trace.git"
+  },
+  "homepage": "https://github.com/nice-hang/local-ai-trace#readme",
+  "bugs": {
+    "url": "https://github.com/nice-hang/local-ai-trace/issues"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "files": [
+    "dist",
+    "client/dist",
+    "README.md",
+    "LICENSE"
+  ],
   "bin": {
-    "lat": "./dist/index.js"
+    "lat": "dist/index.js"
   },
   "scripts": {
+    "prepublishOnly": "npm run build",
     "build": "npm run build:ui && tsc",
     "build:ui": "cd client && npm run build",
     "dev": "tsx watch src/index.ts start",
